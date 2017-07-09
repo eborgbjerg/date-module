@@ -132,29 +132,77 @@ public class DistanceCalculator {
 	 * @param to
 	 * @return current months contribution to the distance between from/to, which are within same year.
 	 */
-	private long getContributionOfMonth(final int currentMonth, final Date from, final Date to) {
+	protected long getContributionOfMonth(final int currentMonth, final Date from, final Date to) {
+		
+		assert (comparator.compare(from, to) <= 0) : "from: " + from + " to: " + to;
+		assert (from.getYear() == to.getYear());
+		
 
 		if ( currentMonth == from.getMonth()  &&  currentMonth == to.getMonth() ) {
 			
 			return to.getDay() - from.getDay();
 		}
 		
-		else {  // TODO
+		else if ( currentMonth == from.getMonth()  &&  currentMonth < to.getMonth() ) {  
 			
-			return 0;
+			return MonthDayCount.get(currentMonth, from.getYear()) - from.getDay();
+		}
+		
+		else if ( currentMonth > from.getMonth()  &&  currentMonth < to.getMonth() ) {
+
+			return MonthDayCount.get(currentMonth, from.getYear());
+		}
+
+		else if ( currentMonth > from.getMonth()  &&  currentMonth == to.getMonth() ) {
+
+			return to.getDay();
+		}
+		
+		throw new IllegalStateException("Program logic error!");
+
+	}
+
+
+	/**
+	 * 
+	 * @param date
+	 * @return number of days in current year from given date (not inclusive).
+	 */
+	protected long daysInYearFromDate(final Date date) {
+		
+		long result = 0;
+		
+		result += (MonthDayCount.get(date.getMonth(), date.getYear()) - date.getDay());
+		
+		for ( int currentMonth = date.getMonth() + 1;  currentMonth <= 12;  currentMonth++ ) {
+			
+			result += MonthDayCount.get(currentMonth, date.getYear());
 		}
 		
 		
+		return result ;
 	}
+	
+	
 
 
-	private long daysInYearFromDate(final Date date) {
-		return 0;  // TODO
-	}
+	/**
+	 * 
+	 * @param date
+	 * @return number of days in current year until given date (inclusive).
+	 */
+	protected long daysInYearUntilDate(final Date date) {
 
-
-	private long daysInYearUntilDate(final Date date) {
-		return 0; // TODO
+		long result = 0;
+		
+		for ( int currentMonth = 1;  currentMonth < date.getMonth();  currentMonth++ ) {
+			
+			result += MonthDayCount.get(currentMonth, date.getYear());
+		}
+		
+		result += date.getDay();
+		
+		return result ;
 	}
 
 

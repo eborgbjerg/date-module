@@ -61,6 +61,12 @@ public class Date {
 	}
 
 
+	@Override
+	public String toString() {
+		return "Date [day=" + day + ", month=" + month + ", year=" + year + "]";
+	}
+
+
 	static class Factory {
 		
 		static final DateValidator validator = new DateValidator();
